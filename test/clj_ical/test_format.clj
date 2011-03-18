@@ -14,18 +14,18 @@
 ;;
 ;; Please see the LICENSE file for a copy of the GNU Affero General Public License.
 
-(ns ical.test-format
+(ns clj-ical.test-format
   (:use clojure.test)
   (:import
    [org.joda.time LocalDate LocalDateTime DateTime DateTimeZone DateTimeConstants DateMidnight]
    [org.joda.time.format ISODateTimeFormat])
-  (:require ical.format
+  (:require clj-ical.format
             clj-time.format
             [clj-time.core :as time]))
 
 (deftest test-ical
   (letfn
-      [(to-ical [input] (with-out-str (ical.format/write-object input)))
+      [(to-ical [input] (with-out-str (clj-ical.format/write-object input)))
        (same [input expected] (= (to-ical input) (str expected "\r\n")))]
 
     (testing "Properties"
@@ -35,7 +35,7 @@
     (testing "Long lines"
       (are [input expected-line-count]
            (= expected-line-count
-              (binding [ical.format/*fold-column* 10]
+              (binding [clj-ical.format/*fold-column* 10]
                 (count (line-seq (java.io.BufferedReader. (java.io.StringReader. (to-ical input)))))))
            [:summary "Bastille Day Party which is a big celebration in France and this line is only this long to test the folding algorithm."]
            13))
@@ -73,7 +73,7 @@
               "END:VCALENDAR"]
 
                (->> [:vcalendar [:vevent [:summary "Bastille Day Party"]]]
-                    ical.format/write-object with-out-str java.io.StringReader. java.io.BufferedReader. line-seq vec))))
+                    clj-ical.format/write-object with-out-str java.io.StringReader. java.io.BufferedReader. line-seq vec))))
 
     (testing "Examples from RFC 2445"
       (are [input expected] (same input expected)
@@ -83,8 +83,8 @@
 
 (deftest test-format-datetime
   (testing "Format of date time in UTC"
-    (is (= "20100101T160000Z" (ical.format/datetime
+    (is (= "20100101T160000Z" (clj-ical.format/datetime
                                (time/date-time 2010 01 01 16 00))))
-    (is (= "20100101T000000Z" (ical.format/datetime
+    (is (= "20100101T000000Z" (clj-ical.format/datetime
                                (time/date-time 2010 01 01))))))
 

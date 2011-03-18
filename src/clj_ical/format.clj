@@ -14,7 +14,7 @@
 ;;
 ;; Please see the LICENSE file for a copy of the GNU Affero General Public License.
 
-(ns ical.format
+(ns clj-ical.format
   (:use clojure.string)
   (:refer-clojure :exclude [replace reverse println])
   (:require [clj-time.format :as format]))
