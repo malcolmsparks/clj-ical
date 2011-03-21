@@ -17,7 +17,7 @@
 (ns clj-ical.test-format
   (:use clojure.test)
   (:import
-   [org.joda.time LocalDate LocalDateTime DateTime DateTimeZone DateTimeConstants DateMidnight]
+   [org.joda.time LocalDate LocalDateTime DateTimeZone DateTimeConstants DateMidnight]
    [org.joda.time.format ISODateTimeFormat])
   (:require clj-ical.format
             clj-time.format
@@ -75,11 +75,22 @@
                (->> [:vcalendar [:vevent [:summary "Bastille Day Party"]]]
                     clj-ical.format/write-object with-out-str java.io.StringReader. java.io.BufferedReader. line-seq vec))))
 
+    (testing "Dates in UTC"
+      (are [input expected] (= (to-ical input) (str expected "\r\n"))
+           [:dtstart (LocalDate. 2008 10 04)]
+           "DTSTART:20081004"
+           ;; It is worth using time/date-time for the sole reason
+           ;; that, unlike the Java Joda Time, it always creates time
+           ;; in UTC.
+           [:dtstart (time/date-time 2008 12 24 05 20 30 0)]
+           "DTSTART:20081224T052030Z"
+           [:dtstart (time/date-time 2010 8 31 23 30 0 0)]
+           "DTSTART:20100831T233000Z"))
+
     (testing "Examples from RFC 2445"
       (are [input expected] (same input expected)
            [:organizer {:CN "\"John Smith\""} "MAILTO:jsmith@host.com"]
            "ORGANIZER;CN=\"John Smith\":MAILTO:jsmith@host.com"))))
-
 
 (deftest test-format-datetime
   (testing "Format of date time in UTC"

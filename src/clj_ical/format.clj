@@ -52,18 +52,36 @@
      (= \" (first s))
      (not (some #{\"} (butlast (rest s)))))))
 
-()
-
 (defn boolean? [x]
   (or (= x true) (= x false)))
 
-(defn format-parameter-value [x]
-  (cond
-   (boolean? x) (upper-case (str x))
-   (is-quoted? x) x
-   :otherwise ((comp quote-if-necessary
-                     upper-case
-                     forbid-quote-in-parameter-value) x)))
+(defmulti format-value class :default :other)
+
+(defmethod format-value String [s] s)
+(defmethod format-value org.joda.time.LocalDate [ld]
+           (.print (clj-time.format/formatters :basic-date) ld))
+(defmethod format-value org.joda.time.DateTime [dt]
+           (.print (clj-time.format/formatters :basic-date-time-no-ms) dt))
+(defmethod format-value :other [s] s)
+
+
+(defmulti format-parameter-value class :default :other)
+
+(defmethod format-parameter-value Boolean [x]
+           (upper-case (str x)))
+
+(defmethod format-parameter-value org.joda.time.LocalDate [x]
+           (format-value x))
+
+(defmethod format-parameter-value org.joda.time.DateTime [x]
+           (format-value x))
+
+(defmethod format-parameter-value :other [x]
+           (cond
+            (is-quoted? x) x
+            :otherwise ((comp quote-if-necessary
+                              upper-case
+                              forbid-quote-in-parameter-value) x)))
 
 (defmulti serialize-param coll?)
 (defmethod serialize-param false [x]
@@ -85,7 +103,7 @@
                                    (format "%s=%s"
                                            (upper-case (name k))
                                            (serialize-param v))) params))]
-   (assert (keyword? (first obj)))
+    (assert (keyword? (first obj)))
     (let [n (upper-case (name (first obj)))
           snd (second obj)
           params (if (map? snd) snd)
@@ -102,7 +120,7 @@
          (str
           (reduce str (interpose ";" (cons n (serialize-params params))))
           ":"
-          (reduce str (interpose "," (flatten values)))))))))
+          (reduce str (interpose "," (map format-value (flatten values))))))))))
 
 (defn datetime [dt]
   (clj-time.format/unparse
