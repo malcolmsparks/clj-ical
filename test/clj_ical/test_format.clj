@@ -32,6 +32,7 @@
       (are [input expected] (same input expected)
            [:version "2.0"] "VERSION:2.0"))
 
+    ;; RFC 2445 specifies that lines should be folded.
     (testing "Long lines"
       (are [input expected-line-count]
            (= expected-line-count

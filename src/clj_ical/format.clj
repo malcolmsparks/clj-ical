@@ -14,12 +14,17 @@
 ;;
 ;; Please see the LICENSE file for a copy of the GNU Affero General Public License.
 
-(ns clj-ical.format
+(ns
+    ^{:doc "A library for printing iCalendar objects as specified by [RFC 2445](http://rfc.ietf.org/rfc/2445.txt)."
+      :author "Malcolm Sparks"}
+  clj-ical.format
   (:use clojure.string)
   (:refer-clojure :exclude [replace reverse println])
   (:require [clj-time.format :as format]))
 
-(def media-type "text/calendar")
+(def ^{:doc "The media-type of all iCalendar objects, as declared in
+     section 3.1"}
+     media-type "text/calendar")
 
 (def *fold-column* 75)
 
@@ -40,6 +45,8 @@
   (if (some #{\"} x)
     (throw (Exception. "Parameter value cannot contain a double-quote")))
   x)
+
+;; ## Value and property parameter printing.
 
 ;; 4.1.1 Property parameters with values containing a COLON, a
 ;; SEMICOLON or a COMMA character MUST be placed in quoted text.
@@ -97,7 +104,9 @@
                      (keyword? (first %)))
                obj)))
 
-(defn write-object [obj]
+(defn write-object
+  "Write an iCalendar object."
+  [obj]
   (letfn [(serialize-params [params]
                             (map (fn [[k v]]
                                    (format "%s=%s"
@@ -119,8 +128,9 @@
         (println
          (str
           (reduce str (interpose ";" (cons n (serialize-params params))))
-          ":"
-          (reduce str (interpose "," (map format-value (flatten values))))))))))
+ ":"
+ (reduce str (interpose "," (map format-value (flatten values))))))))))
+
 
 (defn datetime [dt]
   (clj-time.format/unparse
