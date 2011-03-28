@@ -59,9 +59,6 @@
      (= \" (first s))
      (not (some #{\"} (butlast (rest s)))))))
 
-(defn boolean? [x]
-  (or (= x true) (= x false)))
-
 (defmulti format-value class :default :other)
 
 (defmethod format-value String [s] s)
@@ -99,10 +96,7 @@
                 (interpose ",")
                 (reduce str)))
 
-(defn ^{:private true} is-parent? [obj]
-  (true? (some #(and (coll? %)
-                     (keyword? (first %)))
-               obj)))
+;; ## Writing objects
 
 (defn write-object
   "Write an iCalendar object."
@@ -132,8 +126,4 @@
  (reduce str (interpose "," (map format-value (flatten values))))))))))
 
 
-(defn datetime [dt]
-  (clj-time.format/unparse
-   (clj-time.format/formatters :basic-date-time-no-ms)
-   dt))
 

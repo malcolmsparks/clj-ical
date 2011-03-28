@@ -93,10 +93,5 @@
            [:organizer {:CN "\"John Smith\""} "MAILTO:jsmith@host.com"]
            "ORGANIZER;CN=\"John Smith\":MAILTO:jsmith@host.com"))))
 
-(deftest test-format-datetime
-  (testing "Format of date time in UTC"
-    (is (= "20100101T160000Z" (clj-ical.format/datetime
-                               (time/date-time 2010 01 01 16 00))))
-    (is (= "20100101T000000Z" (clj-ical.format/datetime
-                               (time/date-time 2010 01 01))))))
+
 
