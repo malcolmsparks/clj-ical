@@ -14,7 +14,7 @@
 ;;
 ;; Please see the LICENSE file for a copy of the GNU Affero General Public License.
 
-(defproject clj-ical "1.0"
+(defproject clj-ical "1.1"
   :description "A library to print iCalendar objects as defined by RFC 2445."
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
