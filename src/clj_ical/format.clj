@@ -26,7 +26,7 @@
      section 3.1"}
      media-type "text/calendar")
 
-(def *fold-column* 75)
+(def ^{:dynamic true} *fold-column* 75)
 
 (defn println [s]
   (letfn [(fold [s n]
